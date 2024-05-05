@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'user',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -49,7 +52,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'swa_unnayan_django.urls'
+ROOT_URLCONF = 'competitiveEdge.urls'
 
 TEMPLATES = [
     {
@@ -67,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'swa_unnayan_django.wsgi.application'
+WSGI_APPLICATION = 'competitiveEdge.wsgi.application'
 
 
 # Database
@@ -75,10 +78,15 @@ WSGI_APPLICATION = 'swa_unnayan_django.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'CompetitiveEdge',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',   # Or your MySQL host
+        'PORT': '3306',        # Or your MySQL port
     }
 }
+
 
 
 # Password validation
@@ -121,3 +129,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
