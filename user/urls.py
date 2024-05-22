@@ -2,5 +2,7 @@ from django.urls import path
 from user import views
 
 urlpatterns = [
-    path('admin-ragistration/',views.Admin_ragistration.as_view())
+    path('admin-signup/',views.AdminRegistration.as_view()),
+    path('admin-signin/',views.AdminLoginView.as_view()),
+    path('total-faculty/',views.DataCountAdminDashboard.as_view()),
 ]
