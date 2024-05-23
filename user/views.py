@@ -25,8 +25,10 @@ class AdminRegistration(APIView):
 class AdminLoginView(APIView):
 
     def post(self, req):
-        admin_login = AdminLoginSerializer(data=req.data)
+        admin_login = AdminLoginSerializer.UserLoginSerializer(data=req.data)
+        print("called admin login")
         if admin_login.is_valid():
+            print(admin_login.validated_data['username'],admin_login.validated_data['password'],admin_login.validated_data['email'])
             user = authenticate(
                 username=admin_login.validated_data['username'],
                 password=admin_login.validated_data['password']
