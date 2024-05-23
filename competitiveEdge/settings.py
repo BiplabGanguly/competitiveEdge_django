@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-nz0#b+b$il(=&@bqpo+cr5$9-t21*488azaa%2j-(oe3b80#-k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -82,15 +82,10 @@ WSGI_APPLICATION = 'competitiveEdge.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'CompetitiveEdge',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',   # Or your MySQL host
-        'PORT': '3306',        # Or your MySQL port
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',  # Or provide the full path if not in BASE_DIR
     }
 }
-
 
 
 # Password validation
