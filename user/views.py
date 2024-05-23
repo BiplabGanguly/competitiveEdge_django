@@ -24,21 +24,25 @@ class AdminRegistration(APIView):
     
 class AdminLoginView(APIView):
     
-    def post(self,req):
-        admin_login = AdminLoginSerializer.AdminLoginSerializer(data = req.data)
+  def post(self, req):
+        admin_login = AdminLoginSerializer(data=req.data)
         if admin_login.is_valid():
-            user = authenticate(username = admin_login.validated_data['username'], password = admin_login.validated_data['password'])
-            if user.email == admin_login.validated_data['email']:
-                user_data = models.User_Data.objects.get(user = user)
-                token_obj, _ = Token.objects.get_or_create(user=user)
-                login(req,user)
-                # dictionary data
-                response_data = {"token":token_obj.key}
-                response_data['admin_id'] = user.id
-                response_data['admin_username'] = user.username
-                response_data['admin_permission'] = user_data.permission
-                return Response(response_data,status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            user = authenticate(username=admin_login.validated_data['username'], password=admin_login.validated_data['password'])
+            if user is not None:
+                if user.email == admin_login.validated_data['email']:
+                    user_data = models.User_Data.objects.get(user=user)
+                    token_obj, _ = Token.objects.get_or_create(user=user)
+                    login(req, user)
+                    # Dictionary data
+                    response_data = {
+                        "token": token_obj.key,
+                        "admin_id": user.id,
+                        "admin_username": user.username,
+                        "admin_permission": user_data.permission
+                    }
+                    return Response(response_data, status=status.HTTP_201_CREATED)
+            return Response({"detail": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(admin_login.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
 class DataCountAdminDashboard(APIView):
