@@ -23,17 +23,24 @@ class AdminRegistration(APIView):
     
     
 class AdminLoginView(APIView):
-    
-  def post(self, req):
+
+    def post(self, req):
         admin_login = AdminLoginSerializer(data=req.data)
         if admin_login.is_valid():
-            user = authenticate(username=admin_login.validated_data['username'], password=admin_login.validated_data['password'])
+            user = authenticate(
+                username=admin_login.validated_data['username'],
+                password=admin_login.validated_data['password']
+            )
             if user is not None:
                 if user.email == admin_login.validated_data['email']:
-                    user_data = models.User_Data.objects.get(user=user)
+                    try:
+                        user_data = models.User_Data.objects.get(user=user)
+                    except models.User_Data.DoesNotExist:
+                        return Response({"detail": "User data not found"}, status=status.HTTP_404_NOT_FOUND)
+
                     token_obj, _ = Token.objects.get_or_create(user=user)
                     login(req, user)
-                    # Dictionary data
+                    
                     response_data = {
                         "token": token_obj.key,
                         "admin_id": user.id,
@@ -41,8 +48,11 @@ class AdminLoginView(APIView):
                         "admin_permission": user_data.permission
                     }
                     return Response(response_data, status=status.HTTP_201_CREATED)
+                else:
+                    return Response({"detail": "Email does not match"}, status=status.HTTP_400_BAD_REQUEST)
             return Response({"detail": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(admin_login.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(admin_login.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
 class DataCountAdminDashboard(APIView):
