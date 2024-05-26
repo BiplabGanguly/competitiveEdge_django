@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from Institute.models import InstituteBranch
 
 # Create your models here.
 
@@ -54,6 +55,17 @@ class User_Data(models.Model):
     
     def __str__(self):
         return self.user.username
-
+    
+    
+    
+    
+class UserBranch(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_branch = models.ForeignKey(InstituteBranch, on_delete=models.CASCADE)
+    user_profile = models.CharField(choices=profile_choice, max_length=50)
+    user_permission = models.CharField(choices=permissions, max_length=50, blank=True)
+    
+    def __str__(self):
+        return self.user.username
 
 

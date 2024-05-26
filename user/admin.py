@@ -4,3 +4,4 @@ from user import models
 admin.site.register(models.User_Profile)
 admin.site.register(models.User_Address)
 admin.site.register(models.User_Data)
+admin.site.register(models.UserBranch)

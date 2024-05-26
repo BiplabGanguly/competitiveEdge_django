@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from user import AdminSignupSerializer,AdminLoginSerializer
+from user import AdminSignupSerializer,AdminLoginSerializer,AdminDashboardSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login
@@ -47,7 +47,8 @@ class AdminLoginView(APIView):
                         "token": token_obj.key,
                         "admin_id": user.id,
                         "admin_username": user.username,
-                        "admin_permission": user_data.permission
+                        "admin_permission": user_data.permission,
+                        "admin_profile" : user_data.profile
                     }
                     return Response(response_data, status=status.HTTP_201_CREATED)
                 else:
@@ -62,3 +63,22 @@ class DataCountAdminDashboard(APIView):
             total_faculty = models.User_Data.objects.filter(profile = 'faculty').count()
             responce_data = {'total_faculty':total_faculty}
             return Response(responce_data,status=status.HTTP_201_CREATED)
+        
+        
+
+class GetAllUserData(APIView):
+    def get(self, req):
+        faculty_accepted_users = models.User_Data.objects.filter(profile='faculty', permission='accept')
+        faculty_branch = models.UserBranch.objects.filter(user_profile = 'faculty',user_permission = 'accept')
+        # serializers
+        faculty_data = AdminDashboardSerializer.UserDataSerializer(faculty_accepted_users, many = True)
+        faculty_branch_data = AdminDashboardSerializer.UserBranch(faculty_branch,many = True)
+        # dict
+        responce_data = {'faculty_details':faculty_data.data}
+        responce_data['faculty_branch'] = faculty_branch_data.data
+        return Response(responce_data,status=status.HTTP_201_CREATED)
+        
+        
+# class GetUserBranch(APIView):
+#     def get(self,req):
+        
