@@ -51,7 +51,7 @@ class User_Address(models.Model):
 class User_Data(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile = models.CharField(choices=profile_choice, max_length=50)
-    permission = models.CharField(choices=permissions, max_length=50, blank=True)
+    permission = models.CharField(choices=permissions, max_length=50, default='pending')
     
     def __str__(self):
         return self.user.username
@@ -63,7 +63,7 @@ class UserBranch(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     user_branch = models.ForeignKey(InstituteBranch, on_delete=models.CASCADE)
     user_profile = models.CharField(choices=profile_choice, max_length=50)
-    user_permission = models.CharField(choices=permissions, max_length=50, blank=True)
+    user_permission = models.CharField(choices=permissions, max_length=50, default='pending')
     
     def __str__(self):
         return self.user.username

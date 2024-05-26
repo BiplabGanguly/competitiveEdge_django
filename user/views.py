@@ -14,7 +14,10 @@ class AdminRegistration(APIView):
         user_serializer = AdminSignupSerializer.UserSignupSerializer(data=req.data)
         if user_serializer.is_valid():
             user_serializer.save()
-            user = User.objects.get(username=user_serializer.validated_data['username'])
+            try:
+                user = User.objects.get(username=user_serializer.validated_data['username'])
+            except User.DoesNotExist:
+                        return Response({"detail": "User data not found"}, status=status.HTTP_404_NOT_FOUND)
             token_obj, _ = Token.objects.get_or_create(user=user)
             response_data = user_serializer.data
             response_data['token'] = token_obj.key
@@ -26,9 +29,7 @@ class AdminLoginView(APIView):
 
     def post(self, req):
         admin_login = AdminLoginSerializer.UserLoginSerializer(data=req.data)
-        print("called admin login")
         if admin_login.is_valid():
-            print(admin_login.validated_data['username'],admin_login.validated_data['password'],admin_login.validated_data['email'])
             user = authenticate(
                 username=admin_login.validated_data['username'],
                 password=admin_login.validated_data['password']
@@ -58,25 +59,33 @@ class AdminLoginView(APIView):
             return Response(admin_login.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
+    
 class DataCountAdminDashboard(APIView):
     def get(self,req):
-            total_faculty = models.User_Data.objects.filter(profile = 'faculty').count()
+        try:
+            total_faculty = models.User_Data.objects.filter(profile = 'faculty', permission = 'accept').count()
             responce_data = {'total_faculty':total_faculty}
             return Response(responce_data,status=status.HTTP_201_CREATED)
+        except models.User_Data.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
         
         
 
 class GetAllUserData(APIView):
     def get(self, req):
-        faculty_accepted_users = models.User_Data.objects.filter(profile='faculty', permission='accept')
-        faculty_branch = models.UserBranch.objects.filter(user_profile = 'faculty',user_permission = 'accept')
-        # serializers
-        faculty_data = AdminDashboardSerializer.UserDataSerializer(faculty_accepted_users, many = True)
-        faculty_branch_data = AdminDashboardSerializer.UserBranch(faculty_branch,many = True)
-        # dict
-        responce_data = {'faculty_details':faculty_data.data}
-        responce_data['faculty_branch'] = faculty_branch_data.data
-        return Response(responce_data,status=status.HTTP_201_CREATED)
+        try:
+            faculty_accepted_users = models.User_Data.objects.filter(profile='faculty', permission='accept')
+            faculty_branch = models.UserBranch.objects.filter(user_profile = 'faculty',user_permission = 'accept')
+            # serializers
+            faculty_data = AdminDashboardSerializer.UserDataSerializer(faculty_accepted_users, many = True)
+            faculty_branch_data = AdminDashboardSerializer.UserBranch(faculty_branch,many = True)
+            # dict
+            responce_data = {'faculty_details':faculty_data.data}
+            responce_data['faculty_branch'] = faculty_branch_data.data
+            return Response(responce_data,status=status.HTTP_201_CREATED)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         
         
 # class GetUserBranch(APIView):
