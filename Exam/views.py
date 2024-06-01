@@ -49,7 +49,7 @@ class CompletedExamView(APIView):
         current_date, current_time = get_current_ist_time()
         
         for exam in incomplete_exams:
-            if (current_date >= exam.exam_date and current_time > exam.exam_end_time):
+            if ((current_date == exam.exam_date and current_time > exam.exam_end_time) or (current_date > exam.exam_date)):
                 exam.is_completed = True
                 exam.save()
 
