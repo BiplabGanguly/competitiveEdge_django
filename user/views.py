@@ -4,8 +4,11 @@ from rest_framework import status
 from user import AdminSignupSerializer,AdminLoginSerializer,AdminDashboardSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate,login
 from . import models
+
 
 
 class AdminRegistration(APIView):
@@ -49,7 +52,7 @@ class AdminLoginView(APIView):
                         "admin_id": user.id,
                         "admin_username": user.username,
                         "admin_permission": user_data.permission,
-                        "admin_profile" : user_data.profile
+                        "admin_profile" : user_data.profile,
                     }
                     return Response(response_data, status=status.HTTP_201_CREATED)
                 else:
@@ -61,6 +64,8 @@ class AdminLoginView(APIView):
     
     
 class DataCountAdminDashboard(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self,req):
         try:
             total_faculty = models.User_Data.objects.filter(profile = 'faculty', permission = 'accept').count()
@@ -73,6 +78,8 @@ class DataCountAdminDashboard(APIView):
         
 
 class GetAllUserData(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self, req):
         try:
             faculty_accepted_users = models.User_Data.objects.filter(profile='faculty', permission='accept')
